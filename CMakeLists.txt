@@ -10,6 +10,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   ed
   roscpp
+  wire_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -78,7 +79,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   #INCLUDE_DIRS include
-  CATKIN_DEPENDS ed roscpp # ASK FOR HELP TO CHECK WHICH PKGS SHOULD BE HERE
+  CATKIN_DEPENDS ed roscpp wire_msgs# ASK FOR HELP TO CHECK WHICH PKGS SHOULD BE HERE
 )
 
 include_directories(

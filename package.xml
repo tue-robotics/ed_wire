@@ -42,6 +42,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>ed</depend>
   <depend>roscpp</depend>
+  <depend>wire_msgs</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
