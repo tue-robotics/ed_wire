@@ -59,6 +59,10 @@ void WirePlugin::process(const ed::WorldModel& world, ed::UpdateRequest& req)
 void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
 {
     ROS_ERROR("[ED WIRE] Callback");
+    for(std::vector<wire_msgs::ObjectState>::const_iterator it = msg->objects.begin(); it != msg->objects.end(); ++it)
+    {
+        ROS_ERROR_STREAM("ID: " << it->ID);
+    }
 }
 
 ED_REGISTER_PLUGIN(WirePlugin)
