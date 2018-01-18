@@ -1,5 +1,5 @@
-#ifndef ED_MOVEIT_PLUGIN_H_
-#define ED_MOVEIT_PLUGIN_H_
+#ifndef ED_WIRE_PLUGIN_H_
+#define ED_WIRE_PLUGIN_H_
 
 #include <ed/plugin.h>
 
