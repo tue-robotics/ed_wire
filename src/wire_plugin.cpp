@@ -60,6 +60,12 @@ void WirePlugin::process(const ed::WorldModel& world, ed::UpdateRequest& req)
 
 void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
 {
+    // TODO: What arrtibutes will be provided by wire?
+    // TODO: Maybe a more generic implementation based on distribution type and a mapping between wire and ed attributes.
+    // TODO: entity doesn't get a type yet.
+    // TODO: entity doesn't have a shape yet. Maybe set shape like https://youtu.be/XDc1l_42RDo?t=5m20s
+
+
     // processing all objects from wire
     for(std::vector<wire_msgs::ObjectState>::const_iterator it = msg->objects.begin(); it != msg->objects.end(); ++it)
     {
@@ -81,6 +87,7 @@ void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
         {
             if(it2->attribute == "position")
             {
+                // This is probably overkill
                 if(it2->pdf.dimensions != 3)
                 {
                     ROS_ERROR_STREAM("[ED WIRE] Position of ID: '" << it->ID << "' is not of dimension '3'");
@@ -94,6 +101,7 @@ void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
             }
             else if(it2->attribute == "orientation")
             {
+                // This is probably overkill too
                 if(it2->pdf.dimensions != 4)
                 {
                     ROS_ERROR_STREAM("[ED WIRE] Orientation of ID: '" << it->ID << "' is not of dimension '4'");
@@ -110,7 +118,7 @@ void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
 
         // Only set pose when position or orientation is updated with a correct measurement.
         // When there is no correct measurement of position OR orientation and entity is not already in the world_model it is not added.
-        // TODO: New entities should at least have a correct position, before being allowed to be added to world_model.
+        // TODO: Both position and orientation should be correct, before being added or updated.
         if(updated)
             update_req_->setPose(ed_id, pose);
 
@@ -141,12 +149,6 @@ void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
                 update_req_->removeEntity(e->id());
             }
         }
-
-       // This would also remove entities with incorrect measurements, which should be bad if it only happens
-//        if(update_req_->updated_entities.count(e->id()) == 0) // TODO: ?Or should it be != 1?
-//        {
-//            update_req_->removeEntity(e->id());
-//        }
     }
 }
 
