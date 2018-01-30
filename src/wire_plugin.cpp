@@ -67,69 +67,49 @@ void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
 
 
     // processing all objects from wire
-    for(std::vector<wire_msgs::ObjectState>::const_iterator it = msg->objects.begin(); it != msg->objects.end(); ++it)
+    for(const wire_msgs::ObjectState& object_state : msg->objects)
     {
-        std::string ed_id = "wire-"+std::to_string(it->ID);
+        std::string ed_id = "wire-"+std::to_string(object_state.ID);
 
         const ed::EntityConstPtr e = world_model_->getEntity(ed_id);
 
         geo::Pose3D pose = geo::Pose3D::identity();
 
-        // Check if the entity is already in the world_model, because could also be a new entity
-        if(e)
-        {
-            if(e->has_pose())
-                pose = e->pose();
-        }
-
         bool updated = false;
-        for(std::vector<wire_msgs::Property>::const_iterator it2 = it->properties.begin(); it2 != it->properties.end(); ++it2)
+        for(const wire_msgs::Property& prop : object_state.properties)
         {
-            if(it2->attribute == "position")
+            if(prop.attribute == "position")
             {
-                // This is probably overkill
-                if(it2->pdf.dimensions != 3)
+                // Check if the entity is already in the world_model, because could also be a new entity
+                if(e)
                 {
-                    ROS_ERROR_STREAM("[ED WIRE] Position of ID: '" << it->ID << "' is not of dimension '3'");
+                    if(e->has_pose())
+                        pose = e->pose();
+                }
+
+                // This is probably overkill
+                if(prop.pdf.dimensions != 3)
+                {
+                    ROS_ERROR_STREAM("[ED WIRE] Position of ID: '" << object_state.ID << "' is not of dimension '3'");
                     continue;
                 }
-                const double& x = it2->pdf.data[0];
-                const double& y = it2->pdf.data[1];
-                const double& z = it2->pdf.data[2];
+
+                const double& x = prop.pdf.data[0];
+                const double& y = prop.pdf.data[1];
+                const double& z = prop.pdf.data[2];
                 pose.setOrigin(geo::Vec3(x, y, z));
                 updated = true;
+                update_req_->setPose(ed_id, pose);
             }
-            else if(it2->attribute == "orientation")
-            {
-                // This is probably overkill too
-                if(it2->pdf.dimensions != 4)
-                {
-                    ROS_ERROR_STREAM("[ED WIRE] Orientation of ID: '" << it->ID << "' is not of dimension '4'");
-                    continue;
-                }
-                const double& r = it2->pdf.data[0];
-                const double& p = it2->pdf.data[1];
-                const double& y = it2->pdf.data[2];
-                const double& w = it2->pdf.data[3];
-                pose.R.setRotation(geo::Quaternion(r, p, y, w));
-                updated = true;
-            }
-        }
 
-        // Only set pose when position or orientation is updated with a correct measurement.
-        // When there is no correct measurement of position OR orientation and entity is not already in the world_model it is not added.
-        // TODO: Both position and orientation should be correct, before being added or updated.
-        if(updated)
-            update_req_->setPose(ed_id, pose);
+        }
 
     }
 
     // Removing all entities, which originate from wire, which are not in wire anymore. So keeping entities with incorrect measurements
     // TODO: should we keep entities with incorrect measurements?
-    for(ed::WorldModel::const_iterator it = world_model_->begin(); it != world_model_->end(); ++it)
+    for(ed::EntityConstPtr e : world_model_->entities())
     {
-        const ed::EntityConstPtr& e = *it;
-
         // Ignore all entities that are not originating from wire
         if(e->id().str().find("wire") == std::string::npos)
             continue;
