@@ -10,6 +10,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   ed
   geolib2
+  problib
   roscpp
   wire_msgs
 )

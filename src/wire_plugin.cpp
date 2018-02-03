@@ -11,6 +11,7 @@
 
 //msgs
 #include <wire_msgs/WorldEvidence.h>
+#include <problib/conversions.h>
 
 
 // ----------------------------------------------------------------------------------------------------
@@ -75,7 +76,6 @@ void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
 
         geo::Pose3D pose = geo::Pose3D::identity();
 
-        bool updated = false;
         for(const wire_msgs::Property& prop : object_state.properties)
         {
             if(prop.attribute == "position")
@@ -94,12 +94,24 @@ void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
                     continue;
                 }
 
-                const double& x = prop.pdf.data[0];
-                const double& y = prop.pdf.data[1];
-                const double& z = prop.pdf.data[2];
-                pose.setOrigin(geo::Vec3(x, y, z));
-                updated = true;
+                if (prop.pdf.type != problib::PDF::GAUSSIAN)
+                {
+                    ROS_ERROR_STREAM("[ED WIRE] Position of ID: '" << object_state.ID << "' is not Gaussian");
+                    continue;
+                }
+
+                const pbl::Gaussian* pos_gauss = pbl::msgToGaussian(prop.pdf);
+                const pbl::Vector& pos = pos_gauss->getMean();
+
+                pose.setOrigin(geo::Vec3(pos[0], pos[1], pos[2]));
                 update_req_->setPose(ed_id, pose);
+            }
+            else if(prop.attribute == "class_label")
+            {
+                const pbl::PDF* pdf = pbl::msgToPDF(prop.pdf);
+                std::string label = "";
+                pdf->getExpectedValue(label);
+                update_req_->setType(ed_id, label);
             }
 
         }
