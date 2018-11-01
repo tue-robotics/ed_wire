@@ -1,0 +1,10 @@
+#!/usr/bin/python
+
+from wire_msgs.msg import WorldState, ObjectState
+import rospy
+
+rospy.init_node('ED_wire_test')
+msg = WorldState()
+
+object = ObjectState()
+msg.objects.append(object)
