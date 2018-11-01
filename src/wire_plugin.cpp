@@ -32,7 +32,7 @@ void WirePlugin::configure(tue::Configuration config)
 {
     std::string state_topic;
 
-    config.value("topic", state_topic, tue::REQUIRED);
+    config.value("topic", state_topic, tue::config::REQUIRED);
 
     ros::NodeHandle nh("~");
 //    ros::NodeHandle nh_private;
