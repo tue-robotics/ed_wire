@@ -43,6 +43,7 @@
   <depend>ed</depend>
   <depend>geolib2</depend>
   <depend>problib</depend>
+  <depend>problib_msgs</depend>
   <depend>roscpp</depend>
   <depend>wire_msgs</depend>
 
