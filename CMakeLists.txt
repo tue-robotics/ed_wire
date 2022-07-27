@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   ed
   geolib2
   problib
+  problib_msgs
   roscpp
   wire_msgs
 )
