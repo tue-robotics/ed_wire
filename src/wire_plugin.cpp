@@ -12,6 +12,7 @@
 //msgs
 #include <wire_msgs/WorldEvidence.h>
 #include <problib/conversions.h>
+#include <problib_msgs/pdf.h>
 
 
 // ----------------------------------------------------------------------------------------------------
