@@ -12,6 +12,7 @@
 //msgs
 #include <wire_msgs/WorldEvidence.h>
 #include <problib/conversions.h>
+#include <problib_msgs/PDF.h>
 
 
 // ----------------------------------------------------------------------------------------------------
@@ -94,7 +95,7 @@ void WirePlugin::wireCallback(const wire_msgs::WorldStateConstPtr& msg)
                     continue;
                 }
 
-                if (prop.pdf.type != problib::PDF::GAUSSIAN)
+                if (prop.pdf.type != problib_msgs::PDF::GAUSSIAN)
                 {
                     ROS_ERROR_STREAM("[ED WIRE] Position of ID: '" << object_state.ID << "' is not Gaussian");
                     continue;
